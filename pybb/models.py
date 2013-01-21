@@ -348,6 +348,7 @@ class Profile(PybbProfile):
     your site profile.
     """
     user = AutoOneToOneField(User, related_name='pybb_profile', verbose_name=_('User'))
+    utente_confermato = models.BooleanField(default=False)
 
     class Meta(object):
         verbose_name = _('Profile')
