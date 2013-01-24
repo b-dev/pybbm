@@ -38,6 +38,9 @@ def filter_hidden(request, queryset_or_model):
     Return queryset for model, manager or queryset, filtering hidden objects for non staff users.
     """
     queryset = _get_queryset(queryset_or_model)
+    if request.user.is_anonymous:
+        return queryset.filter(hidden=False)
+
     q1 = Q(hidden=False)
     user_groups = request.user.groups.all()
     q2 = Q(hidden=True) & Q(visible_to_user=request.user)
