@@ -19,6 +19,7 @@ class CategoryAdmin(admin.ModelAdmin):
     ordering = ['position']
     search_fields = ['name']
     list_editable = ['position']
+    filter_horizontal = ('visible_to_user', 'visible_to_group')
 
     inlines = [ForumInlineAdmin]
 
@@ -32,7 +33,7 @@ class ForumAdmin(admin.ModelAdmin):
     list_editable = ['position', 'hidden']
     fieldsets = (
         (None, {
-                'fields': ('category', 'name', 'hidden', 'position', )
+                'fields': ('category', 'name', 'hidden', 'visible_to_user', 'visible_to_group', 'position', )
                 }
          ),
         (_('Additional options'), {
@@ -41,6 +42,7 @@ class ForumAdmin(admin.ModelAdmin):
                 }
             ),
         )
+    filter_horizontal = ('visible_to_user', 'visible_to_group')
 
 
 class PollAnswerAdmin(admin.TabularInline):

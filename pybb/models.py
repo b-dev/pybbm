@@ -4,7 +4,7 @@ import os.path
 import uuid
 
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.core.urlresolvers import reverse
 from django.utils.html import strip_tags
 from django.utils.translation import ugettext_lazy as _
@@ -64,6 +64,8 @@ class Category(models.Model):
     hidden = models.BooleanField(_('Hidden'), blank=False, null=False, default=False,
         help_text = _('If checked, this category will be visible only for staff')
     )
+    visible_to_user = models.ManyToManyField(User, blank=True, null=True, related_name="category_visible")
+    visible_to_group = models.ManyToManyField(Group, blank=True, null=True, related_name="category_visible")
 
     class Meta(object):
         ordering = ['position']
@@ -100,6 +102,8 @@ class Forum(models.Model):
     hidden = models.BooleanField(_('Hidden'), blank=False, null=False, default=False)
     readed_by = models.ManyToManyField(User, through='ForumReadTracker', related_name='readed_forums')
     headline = models.TextField(_('Headline'), blank=True, null=True)
+    visible_to_user = models.ManyToManyField(User, blank=True, null=True, related_name="forums_visible")
+    visible_to_group = models.ManyToManyField(Group, blank=True, null=True, related_name="forums_visible")
 
     class Meta(object):
         ordering = ['position']

@@ -38,9 +38,11 @@ def filter_hidden(request, queryset_or_model):
     Return queryset for model, manager or queryset, filtering hidden objects for non staff users.
     """
     queryset = _get_queryset(queryset_or_model)
-    if request.user.is_staff:
-        return queryset
-    return queryset.filter(hidden=False)
+    q1 = Q(hidden=False)
+    user_groups = request.user.groups.all()
+    q2 = Q(hidden=True) & Q(visible_to_user=request.user)
+    q3 = Q(hidden=True) & Q(visible_to_group__in=user_groups)
+    return queryset.filter(q1|q2|q3)
 
 class IndexView(generic.ListView):
 
