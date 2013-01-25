@@ -93,8 +93,8 @@ class ForumView(generic.ListView):
 
     def get_queryset(self):
         self.forum = get_object_or_404(filter_hidden(self.request, Forum), pk=self.kwargs['pk'])
-        if self.forum.category.hidden and (not self.request.user.is_staff):
-            raise Http404()
+#        if self.forum.category.hidden and (not self.request.user.is_staff):
+#            raise Http404()
         qs = self.forum.topics.order_by('-sticky', '-updated').select_related()
         if not (self.request.user.is_superuser or self.request.user in self.forum.moderators.all()):
             if self.request.user.is_authenticated():
@@ -116,8 +116,14 @@ class TopicView(generic.ListView):
            not pybb_topic_moderated_by(self.topic, self.request.user) and\
            not self.request.user == self.topic.user:
             raise PermissionDenied
-        if (self.topic.forum.hidden or self.topic.forum.category.hidden) and (not self.request.user.is_staff):
+
+        forum_visibili = [ x.pk for x in filter_hidden(self.request, self.topic.forum) ]
+        categorie_visibili = [ x.pk for x in filter_hidden(self.request, self.topic.forum.category) ]
+        if self.topic.forum.pk not in forum_visibili or self.topic.forum.category.pk not in categorie_visibili:
             raise Http404()
+        #if (self.topic.forum.hidden or self.topic.forum.category.hidden) and (not self.request.user.is_staff):
+        #    raise Http404()
+
         self.topic.views += 1
         self.topic.save()
         qs = self.topic.posts.all().select_related('user')
