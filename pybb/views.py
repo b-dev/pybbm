@@ -296,7 +296,10 @@ class AddPostView(PostEditMixin, generic.CreateView):
             self.forum = get_object_or_404(filter_hidden(request, Forum), pk=kwargs['forum_id'])
         elif 'topic_id' in kwargs:
             self.topic = get_object_or_404(Topic, pk=kwargs['topic_id'])
-            if self.topic.forum.hidden and (not self.user.is_staff):
+            forum_visibili = [ x.pk for x in filter_hidden(request, self.topic.forum) ]
+            categorie_visibili = [ x.pk for x in filter_hidden(request, self.topic.forum.category) ]
+            if self.topic.forum.pk not in forum_visibili or self.topic.forum.category.pk not in categorie_visibili:
+            #if self.topic.forum.hidden and (not self.user.is_staff):
                 raise Http404
             if self.topic.closed:
                 raise PermissionDenied
